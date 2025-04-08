@@ -14,17 +14,17 @@ Original App Design Project - README Template
 
 ### Description
 
-[Provide a brief description of your app, its purpose, and functionality.]
+Apple Carplay application that pauses your Apple Music when you go over the speed limit. 2 Screens, one for music and one for the actual app/
 
 ### App Evaluation
 
 [Evaluation of your app across the following attributes]
-- **Category:** [e.g., Social, Entertainment, Education]
-- **Mobile:** [Is it a mobile application only?]
-- **Story:**  [What story does your app tell?]
-- **Market:** [Target audience for the app]
-- **Habit:** [Is it a daily use app or occasional use?]
-- **Scope:** [Is it a broad or narrow app in terms of features?]
+- **Category:** Utility
+- **Mobile:** Yes, mainly CarPlay
+- **Story:**  Be a safe driver
+- **Market:** Drivers, People who speed up too much when listening to music
+- **Habit:** Daily Use App
+- **Scope:** Narrow Scope, not many features
 
 ## Product Spec
 

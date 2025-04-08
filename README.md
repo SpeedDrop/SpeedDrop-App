@@ -1,7 +1,7 @@
 Original App Design Project - README Template
 ===
 
-# Please Don't Stop The Music App
+# SpeedDrop App
 
 ## Table of Contents
 

@@ -14,7 +14,7 @@ Original App Design Project - README Template
 
 ### Description
 
-Apple Carplay application that pauses your Apple Music when you go over the speed limit. 2 Screens, one for music and one for the actual app/
+Apple Carplay application that pauses your Apple Music when you go over the speed limit. 2 Screens, one for music and one for the actual app
 
 ### App Evaluation
 

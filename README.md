@@ -45,10 +45,10 @@ Apple Carplay application that pauses your Apple Music when you go over the spee
 
 ### 2. Screen Archetypes
 
-- [ ] [**Screen Name, e.g., Login Screen**]
-* [Required User Feature: User can log in.]
-- [ ] [**Another Screen Name**]
-* [Associated required user story]
+- [ ] Main Screen
+* Tied to all must have stories
+- [ ] App Customization (Optional)
+* User can customize their app display
 ...
 ...
 ...

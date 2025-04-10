@@ -62,11 +62,17 @@ Apple Carplay application that pauses your Apple Music when you go over the spee
 
 ## Wireframes
 
-[Add picture of your hand sketched wireframes in this section]
+<img width="1316" alt="image" src="https://github.com/user-attachments/assets/ad98dc2f-c264-48ef-8e59-b20f1f0ca995" />
+<img width="1307" alt="image" src="https://github.com/user-attachments/assets/76126a3f-c2cb-4324-a145-e7521af29768" />
+<img width="1313" alt="image" src="https://github.com/user-attachments/assets/6751845d-91e1-46cb-8d37-33d00beed774" />
+
 
 ### [BONUS] Digital Wireframes & Mockups
+https://www.figma.com/design/PRz2KMEXdAqwmFlOyy4Y9n/SpeedDrop?node-id=0-1&t=ylfH7G6RmQ8zapXm-1
 
 ### [BONUS] Interactive Prototype
+https://www.figma.com/proto/PRz2KMEXdAqwmFlOyy4Y9n/SpeedDrop?node-id=0-1&t=ylfH7G6RmQ8zapXm-1  
+
 
 ## Schema 
 

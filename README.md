@@ -77,9 +77,5 @@ For our project we will not need any models/databases
 
 ### Networking
 
-- [List of network requests by screen]
-- [Example: `[GET] /users` - to retrieve user data]
-- ...
-- [Add list of network requests by screen ]
-- [Create basic snippets for each Parse network request]
-- [OPTIONAL: List endpoints if using existing API such as Yelp]
+- https://smap.hereapi.com/v8/maps/attributes?
+  * To get the speed limit for the current coordinates

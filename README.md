@@ -72,6 +72,8 @@ https://www.figma.com/design/PRz2KMEXdAqwmFlOyy4Y9n/SpeedDrop?node-id=0-1&t=ylfH
 
 ### [BONUS] Interactive Prototype
 https://www.figma.com/proto/PRz2KMEXdAqwmFlOyy4Y9n/SpeedDrop?node-id=0-1&t=ylfH7G6RmQ8zapXm-1  
+![SpeedDropGif](https://github.com/user-attachments/assets/0986b2f6-2e60-49bd-8fad-0e1436e0243c)
+
 
 
 ## Schema 

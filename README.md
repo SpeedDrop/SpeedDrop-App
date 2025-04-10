@@ -49,27 +49,15 @@ Apple Carplay application that pauses your Apple Music when you go over the spee
 * Tied to all must have stories
 - [ ] App Customization (Optional)
 * User can customize their app display
-...
-...
-...
 
 ### 3. Navigation
 
-**Tab Navigation** (Tab to Screen)
-
-
-- [ ] [First Tab, e.g., Home Feed]
-- [ ] [Second Tab, e.g., Profile]
-...
-...
-...
-
 **Flow Navigation** (Screen to Screen)
 
-- [ ] [**Screen Name**]
-  * Leads to [**Next Screen**]
-- [ ] [**Another Screen Name**]
-  * Leads to [**Another Screen**] 
+- [ ] Main Screen
+  * Leads to Customization Screen
+- [ ] Custmization Screen
+  * Leads back into Main Screen
 
 
 ## Wireframes

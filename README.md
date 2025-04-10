@@ -32,13 +32,16 @@ Apple Carplay application that pauses your Apple Music when you go over the spee
 
 **Required Must-have Stories**
 
-* [User can [specific action, e.g., register an account]]
-* ...
+* User can view their current speed while driving
+* User can see the speed limit for the current area they are in
+* The user receives a warning if they start going over the speed limit
+* The user's music is paused if they go too fast and will only resume once they slow down to the speed limit
 
 **Optional Nice-to-have Stories**
 
-* [User can [specific action, e.g., persist user information across working sessions]]
-* ...
+* User can view a map while the app is open
+* User receives a congratulatory message after a safe drive
+* User can customize their app display
 
 ### 2. Screen Archetypes
 
@@ -82,13 +85,7 @@ Apple Carplay application that pauses your Apple Music when you go over the spee
 
 ### Models
 
-[Model Name, e.g., User]
-| Property | Type   | Description                                  |
-|----------|--------|----------------------------------------------|
-| username | String | unique id for the user post (default field)   |
-| password | String | user's password for login authentication      |
-| ...      | ...    | ...                          
-
+For our project we will not need any models/databases
 
 ### Networking
 

@@ -45,7 +45,8 @@ Apple Carplay application that pauses your Apple Music when you go over the spee
 
 ### 2. Screen Archetypes
 
-- [X] Main Screen
+- [X] Main Screen (Milestone 8 Gif)![UIProgress](https://github.com/user-attachments/assets/62039bb2-57cd-4758-9be6-67348523cb02)
+
 * Tied to all must have stories
 - [ ] App Customization (Optional)
 * User can customize their app display

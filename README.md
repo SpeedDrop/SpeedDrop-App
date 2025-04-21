@@ -89,3 +89,12 @@ For our project we will not need any models/databases
 
 - https://smap.hereapi.com/v8/maps/attributes?
   * To get the speed limit for the current coordinates
+
+
+## Milestone 4 Progress
+
+### Main Screen - Kyla
+![UIProgress](https://github.com/user-attachments/assets/62039bb2-57cd-4758-9be6-67348523cb02)
+
+### Getting User Speed - Saul
+<img width="371" alt="Screenshot 2025-04-20 at 7 03 54 PM" src="https://github.com/user-attachments/assets/fd77e8e9-8aa9-4f88-a5e8-136e52e7a4a7" />

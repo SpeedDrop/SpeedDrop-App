@@ -103,4 +103,5 @@ For our project we will not need any models/databases
 ## Speed Limit Implementation - Janniel
 
 <img width="371" src="https://raw.githubusercontent.com/SpeedDrop/SpeedDrop-App/main/490695767_2821306194738058_7359752764216030707_n.png" />
-<img width="371" src="https://raw.githubusercontent.com/SpeedDrop/SpeedDrop-App/main/491009379_2122356794939193_1464743287936743812_n.png" />
+<img width="371" src="https://raw.githubusercontent.com/SpeedDrop/SpeedDrop-App/main/491005167_702941869069784_8269999360606935111_n.png" />
+

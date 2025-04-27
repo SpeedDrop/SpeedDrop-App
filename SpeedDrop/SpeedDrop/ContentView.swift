@@ -7,88 +7,106 @@
 
 import SwiftUI
 
+// published variable for the selected car they choose in customization
+class CarSelectionModel: ObservableObject {
+    @Published var selectedCar: String = "carspeeddrop1"
+}
+
 struct ContentView: View {
+    @State private var navigateToCustomization = false
+    
     var body: some View {
-        
-        ZStack{
-            // gradient background color
-            Image("backgroundColor")
-                   .resizable()
-                   .scaledToFill()
-                   .ignoresSafeArea()
-            
-            // main components
-            VStack {
-                // app title text
-                Text("SPEEDDROP")
-                    .font(.largeTitle)
-                    .fontWeight(.light)
-                    .tracking(5)
-                    .foregroundColor(.white)
-                    .padding(.top, 20)
+    
+    NavigationStack {
+        GeometryReader{ geometry in
+            ZStack{
+                // gradient background color
+                Image("backgroundColor")
+                       .resizable()
+                       .scaledToFill()
+                       .ignoresSafeArea()
                 
-                // user's speed
-                SpeedometerView()
-                    .offset(x: -180, y: 0)
+                // main components
+                VStack {
+                    // app title text
+                    Text("SPEEDDROP")
+                        .font(.largeTitle)
+                        .fontWeight(.light)
+                        .tracking(5)
+                        .foregroundColor(.white)
+                    
+                    // user's speed
+                    SpeedometerView()
+                        .offset(x: geometry.size.width * -0.25, y: 0)
+                    
                 
-                // car component
-                Image("car1SpeedDrop")
-                    .imageScale(.large)
-                    .padding(.top,-100)
-                    .padding(.bottom, -50)
-                    .offset(x: -180, y: 0)
-                    // TODO: when car is tapped go to car customization page
-                    .onTapGesture {
-                        print("car tapped!")
-                    }
-                
-                // road with dashed lines
-                RoadView()
-                    .frame(height: 40)
-                    .padding(.horizontal, -80)
-                    .ignoresSafeArea()
-                
-               // speed limit sign with pole
-                SpeedLimitView()
-                    .offset(x: 220, y: -260)
-                    // TODO: when speed limit is tapped navigate to apple maps
-                    .onTapGesture {
-                        print("speed limit tapped!")
-                    }
-            }
-            .padding()
-            
-           // music bar and text
-           MusicBarView()
-                // TODO: when music is tapped navigate to apple music
-                .onTapGesture {
-                    print("music tapped!")
+                       Image("car1SpeedDrop")
+                           .imageScale(.large)
+                           .padding(.top, -100)
+                           .padding(.bottom, -50)
+                           .offset(x: geometry.size.width * -0.25)
+                           .onTapGesture {
+                               print("car tapped!")
+                               navigateToCustomization = true
+                           }
+                           .navigationDestination(isPresented: $navigateToCustomization) {
+                               CarCustomizationView()
+                           }
+                 
+                    
+                    // road with dashed lines
+                    RoadView()
+                        .frame(height: 40)
+                        .padding(.horizontal, -80)
+                        .ignoresSafeArea()
+                    
+                   // speed limit sign with pole
+                    SpeedLimitView()
+                        .offset(x: geometry.size.width * 0.25, y: -260)
+                        // TODO: when speed limit is tapped navigate to apple maps
+                        .onTapGesture {
+                            print("speed limit tapped!")
+                        }
                 }
+                .padding()
+                .offset(y: -geometry.size.height * 0.04)
+                .frame(width: geometry.size.width)
+               // music bar and text
+               MusicBarView()
+                    // TODO: when music is tapped navigate to apple music
+                    .offset(y: geometry.size.height * 0.20000001)
+                    .frame(alignment: .center)
+                    .onTapGesture {
+                        print("music tapped!")
+                    }
+                }
+            }
+        }
+     .tint(.white)
+
     }
-  }
 }
 
 struct MusicBarView: View {
     var body: some View {
-        RoundedRectangle(cornerRadius: 20)
-            .stroke(Color.white.opacity(0.8), lineWidth: 2)
-               .background(
-                   RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.green.opacity(0.7))
-                   // TODO: add red option when speed limit is exceeded
-               )
-               .frame(height: 15)
-               .padding(.horizontal, 20)
-               .offset(x: 0, y: 80)
-        HStack {
-            Image(systemName: "speaker.wave.2.fill")
-            // TODO: for muted Image(systemName: "speaker.slash.fill")
-                .foregroundColor(.white)
-            Text("Music Playing")
-                .foregroundColor(.white)
+        VStack{
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.white.opacity(0.8), lineWidth: 2)
+                   .background(
+                       RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.green.opacity(0.7))
+                       // TODO: add red option when speed limit is exceeded
+                   )
+                   .frame(height: 15, alignment: .center)
+                   .padding(.horizontal, 75)
+            HStack {
+                Image(systemName: "speaker.wave.2.fill")
+                // TODO: for muted Image(systemName: "speaker.slash.fill")
+                    .foregroundColor(.white)
+                Text("Music Playing")
+                    .foregroundColor(.white)
+            }
         }
-        .offset(x: 0, y: 110)
-        
     }
 }
 
@@ -116,13 +134,16 @@ struct SpeedLimitView: View {
                     Text("SPEED")
                         .font(.system(size: 14))
                         .fontWeight(.medium)
+                        .foregroundColor(.black)
                     Text("LIMIT")
                         .font(.system(size: 14))
                         .fontWeight(.medium)
+                        .foregroundColor(.black)
                 // JANNIEL will change this text to be the speed limit of the area
                     Text("45")
                         .font(.system(size: 28))
                         .fontWeight(.bold)
+                        .foregroundColor(.black)
                 }
             }
         }

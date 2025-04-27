@@ -106,7 +106,17 @@ For our project we will not need any models/databases
 Description: When the driver enters a new street, the app briefly displays a “Gathering data!” message. This indicates a short delay as the app fetches the current speed limit using real-time location data. Once retrieved, the correct speed limit is immediately shown to the user.
 <img width="371" src="https://raw.githubusercontent.com/SpeedDrop/SpeedDrop-App/main/491005167_702941869069784_8269999360606935111_n.png" />
 
-## Music preview - Sergio
+## Music Preview - Sergio
 Unable to retreive preview at this moment. 
 Creating a view screen so that user may be able to see the song currently playing. ability to adjust volume, pause, play, skip, replay/backtrack current song playing. 
 will mimic current apple music player UI.
+
+## Milestone 5 Progress 
+### Main Screen Dynamic UI Formatting Added & Initial Car Customization Screen Created - Kyla
+![UIUpdate](https://github.com/user-attachments/assets/f5f028fa-383f-4746-bb55-bebb28c00cfd)
+
+### Getting User Speed - Saul
+
+## Speed Limit Implementation - Janniel
+
+## Music Preview - Sergio

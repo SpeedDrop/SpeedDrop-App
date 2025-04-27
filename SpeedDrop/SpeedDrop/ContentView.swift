@@ -151,6 +151,9 @@ struct SpeedLimitView: View {
 }
 
 struct SpeedometerView: View {
+    
+    @StateObject private var locationManager = LocationManager()
+    
     var body: some View {
         ZStack {
             // semi-circle speedometer
@@ -172,8 +175,8 @@ struct SpeedometerView: View {
                     .rotationEffect(.degrees(Double(i) * 6 - 90))
             }
             
-            // SAUL will change this text to be the user's speed
-            Text("45")
+            // User's Current Speed
+            Text(String(format: "%.0f MPH", locationManager.speedMPH))
                 .font(.system(size: 32, weight: .bold))
                 .foregroundColor(.white)
                 .offset(x:0,y:-15)

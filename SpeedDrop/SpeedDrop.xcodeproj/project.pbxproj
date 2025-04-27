@@ -10,9 +10,22 @@
 		4251F03A2DACE4C900041A7A /* SpeedDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpeedDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		42679A412DBEC22B008EE610 /* Exceptions for "SpeedDrop" folder in "SpeedDrop" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4251F0392DACE4C900041A7A /* SpeedDrop */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4251F03C2DACE4C900041A7A /* SpeedDrop */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				42679A412DBEC22B008EE610 /* Exceptions for "SpeedDrop" folder in "SpeedDrop" target */,
+			);
 			path = SpeedDrop;
 			sourceTree = "<group>";
 		};

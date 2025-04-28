@@ -119,6 +119,6 @@ will mimic current apple music player UI.
 <a href="https://gifyu.com/image/bL2xW"><img src="https://s4.gifyu.com/images/bL2xW.gif" alt="ScreenRecording 04 27 202515 38 55 1 ezgif.com speed" border="0" /></a>
 
 ## Speed Limit Implementation - Janniel
-<img src ="IMG_8756.png">
-API failed to work this week, but the implementation is currently on progress. GIF should be available as soon as the API is implemented properly.
+<img src ="ScreenRecording_04-28-2025_00-50-40_1.mov">
+API failed to work this week, but the implementation is currently on progress.
 ## Music Preview - Sergio

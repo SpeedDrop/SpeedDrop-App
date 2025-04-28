@@ -116,6 +116,7 @@ will mimic current apple music player UI.
 ![UIUpdate](https://github.com/user-attachments/assets/f5f028fa-383f-4746-bb55-bebb28c00cfd)
 
 ### Getting User Speed - Saul
+<a href="https://gifyu.com/image/bL2xW"><img src="https://s4.gifyu.com/images/bL2xW.gif" alt="ScreenRecording 04 27 202515 38 55 1 ezgif.com speed" border="0" /></a>
 
 ## Speed Limit Implementation - Janniel
 

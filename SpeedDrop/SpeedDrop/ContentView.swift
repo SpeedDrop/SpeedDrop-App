@@ -14,6 +14,7 @@ class CarSelectionModel: ObservableObject {
 
 struct ContentView: View {
     @State private var navigateToCustomization = false
+    @State private var navigateToCoordinates = false
     
     var body: some View {
     
@@ -47,7 +48,7 @@ struct ContentView: View {
                            .offset(x: geometry.size.width * -0.25)
                            .onTapGesture {
                                print("car tapped!")
-                               navigateToCustomization = true
+                               navigateToCustomization = true // STARTING Here: copy this
                            }
                            .navigationDestination(isPresented: $navigateToCustomization) {
                                CarCustomizationView()
@@ -66,6 +67,11 @@ struct ContentView: View {
                         // TODO: when speed limit is tapped navigate to apple maps
                         .onTapGesture {
                             print("speed limit tapped!")
+                            navigateToCoordinates = true // STARTING Here: copy this
+                        }
+                        .navigationDestination(isPresented: $navigateToCoordinates) {
+                            CoordinateView()
+                        
                         }
                 }
                 .padding()
@@ -111,6 +117,8 @@ struct MusicBarView: View {
 }
 
 struct SpeedLimitView: View {
+    @StateObject private var locationLimitManager = LocationLimitManager()
+      @StateObject private var speedLimitFetcher = SpeedLimitFetcher()
     var body: some View {
         ZStack {
             // pole
@@ -140,15 +148,31 @@ struct SpeedLimitView: View {
                         .fontWeight(.medium)
                         .foregroundColor(.black)
                 // JANNIEL will change this text to be the speed limit of the area
-                    Text("45")
-                        .font(.system(size: 28))
-                        .fontWeight(.bold)
-                        .foregroundColor(.black)
+                        .font(.footnote)
+                                  if let speedLimit = speedLimitFetcher.speedLimit {
+                                      Text("\(speedLimit)")
+                                          .font(.system(size: 28))
+                                          .fontWeight(.bold)
+                                          .foregroundColor(.black)
+                                  } else if speedLimitFetcher.isLoading {
+                                      ProgressView("...")
+                                          .font(.system(size: 28))
+                                          .fontWeight(.bold)
+                                          .foregroundColor(.black)
+                                  } else {
+                                      Text("N/A")
+                                          .font(.system(size: 28))
+                                          .fontWeight(.bold)
+                                          .foregroundColor(.black)
+                                  }
+                              }
+
+
                 }
             }
         }
     }
-}
+
 
 struct SpeedometerView: View {
     

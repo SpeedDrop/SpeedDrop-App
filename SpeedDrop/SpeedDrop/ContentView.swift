@@ -118,7 +118,8 @@ struct MusicBarView: View {
 
 struct SpeedLimitView: View {
     @StateObject private var locationLimitManager = LocationLimitManager()
-      @StateObject private var speedLimitFetcher = SpeedLimitFetcher()
+    @StateObject private var speedLimitFetcher = SpeedLimitFetcher()
+    
     var body: some View {
         ZStack {
             // pole
@@ -126,7 +127,7 @@ struct SpeedLimitView: View {
                 .foregroundColor(.white)
                 .frame(width: 5, height: 165)
                 .offset(y: 50)
-            
+
             // speed limit sign
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
@@ -137,7 +138,7 @@ struct SpeedLimitView: View {
                             .stroke(Color.black, lineWidth: 2)
                             .padding(2)
                     )
-                
+
                 VStack(spacing: 0) {
                     Text("SPEED")
                         .font(.system(size: 14))
@@ -147,31 +148,34 @@ struct SpeedLimitView: View {
                         .font(.system(size: 14))
                         .fontWeight(.medium)
                         .foregroundColor(.black)
-                // JANNIEL will change this text to be the speed limit of the area
-                        .font(.footnote)
-                                  if let speedLimit = speedLimitFetcher.speedLimit {
-                                      Text("\(speedLimit)")
-                                          .font(.system(size: 28))
-                                          .fontWeight(.bold)
-                                          .foregroundColor(.black)
-                                  } else if speedLimitFetcher.isLoading {
-                                      ProgressView("...")
-                                          .font(.system(size: 28))
-                                          .fontWeight(.bold)
-                                          .foregroundColor(.black)
-                                  } else {
-                                      Text("N/A")
-                                          .font(.system(size: 28))
-                                          .fontWeight(.bold)
-                                          .foregroundColor(.black)
-                                  }
-                              }
 
-
+                    if let speedLimit = speedLimitFetcher.speedLimit {
+                        Text("\(speedLimit)")
+                            .font(.system(size: 28))
+                            .fontWeight(.bold)
+                            .foregroundColor(.black)
+//                    } else if speedLimitFetcher.isLoading {
+//                        ProgressView("...")
+//                            .font(.system(size: 28))
+//                            .fontWeight(.bold)
+//                            .foregroundColor(.black)
+                    } else {
+                        Text("N/A")
+                            .font(.system(size: 28))
+                            .fontWeight(.bold)
+                            .foregroundColor(.black)
+                    }
                 }
             }
         }
+        // fetch data when location changes
+        .onChange(of: locationLimitManager.lastLocation) { newLocation in
+            if let loc = newLocation {
+                speedLimitFetcher.fetchSpeedLimit(lat: loc.coordinate.latitude, lon: loc.coordinate.longitude)
+            }
+        }
     }
+}
 
 
 struct SpeedometerView: View {

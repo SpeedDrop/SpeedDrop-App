@@ -9,12 +9,14 @@ import SwiftUI
 
 // published variable for the selected car they choose in customization
 class CarSelectionModel: ObservableObject {
-    @Published var selectedCar: String = "carspeeddrop1"
+    @Published var selectedCar: String = "car1SpeedDrop"
 }
 
 struct ContentView: View {
     @State private var navigateToCustomization = false
     @State private var navigateToCoordinates = false
+    @State private var navigateToMusic = false
+    @StateObject private var carModel = CarSelectionModel()
     
     var body: some View {
     
@@ -40,18 +42,21 @@ struct ContentView: View {
                     SpeedometerView()
                         .offset(x: geometry.size.width * -0.25, y: 0)
                     
-                
-                       Image("car1SpeedDrop")
-                           .imageScale(.large)
+                    // use selected car image here
+                       Image(carModel.selectedCar)
+                           .resizable()
+                           .scaledToFit()
                            .padding(.top, -100)
-                           .padding(.bottom, -50)
+                           .padding(.bottom, -60)
                            .offset(x: geometry.size.width * -0.25)
                            .onTapGesture {
                                print("car tapped!")
-                               navigateToCustomization = true // STARTING Here: copy this
+                               navigateToCustomization = true
                            }
                            .navigationDestination(isPresented: $navigateToCustomization) {
                                CarCustomizationView()
+                               // pass car environment object
+                                   .environmentObject(carModel)
                            }
                  
                     
@@ -67,11 +72,10 @@ struct ContentView: View {
                         // TODO: when speed limit is tapped navigate to apple maps
                         .onTapGesture {
                             print("speed limit tapped!")
-                            navigateToCoordinates = true // STARTING Here: copy this
+                            navigateToCoordinates = true
                         }
                         .navigationDestination(isPresented: $navigateToCoordinates) {
                             CoordinateView()
-                        
                         }
                 }
                 .padding()
@@ -84,12 +88,17 @@ struct ContentView: View {
                     .frame(alignment: .center)
                     .onTapGesture {
                         print("music tapped!")
+                        navigateToMusic = true
+                    }
+                    .navigationDestination(isPresented: $navigateToMusic) {
+                        MusicPlayerView()
                     }
                 }
             }
         }
-     .tint(.white)
-
+        // make selected car available in other view
+        .environmentObject(carModel) 
+        .tint(.white)
     }
 }
 
@@ -118,7 +127,7 @@ struct MusicBarView: View {
 
 struct SpeedLimitView: View {
     @StateObject private var locationLimitManager = LocationLimitManager()
-      @StateObject private var speedLimitFetcher = SpeedLimitFetcher()
+    @StateObject private var speedLimitFetcher = SpeedLimitFetcher()
     var body: some View {
         ZStack {
             // pole
@@ -155,7 +164,7 @@ struct SpeedLimitView: View {
                                           .fontWeight(.bold)
                                           .foregroundColor(.black)
                                   } else if speedLimitFetcher.isLoading {
-                                      ProgressView("...")
+                                      Text("...")
                                           .font(.system(size: 28))
                                           .fontWeight(.bold)
                                           .foregroundColor(.black)
@@ -166,10 +175,16 @@ struct SpeedLimitView: View {
                                           .foregroundColor(.black)
                                   }
                               }
+                 }
 
-
-                }
             }
+        // fetch data when location changes
+        .onChange(of: locationLimitManager.lastLocation) { newLocation in
+            if let loc = newLocation {
+                speedLimitFetcher.fetchSpeedLimit(lat: loc.coordinate.latitude, lon: loc.coordinate.longitude)
+             }
+          }
+        
         }
     }
 
@@ -200,7 +215,7 @@ struct SpeedometerView: View {
             }
             
             // User's Current Speed
-            Text(String(format: "%.0f MPH", locationManager.speedMPH))
+            Text(String(format: "%.0f", locationManager.speedMPH))
                 .font(.system(size: 32, weight: .bold))
                 .foregroundColor(.white)
                 .offset(x:0,y:-15)

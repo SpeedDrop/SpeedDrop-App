@@ -19,8 +19,8 @@ class SpeedLimitFetcher: ObservableObject {
     func startFetching(for locationProvider: @escaping () -> CLLocation?) {
         timer?.invalidate() // Stop any previous timer if it's running
         
-        // fetch data every minute
-        timer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { [weak self] _ in
+        // fetch data every 5secs instead of how it was before
+        timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
             guard let self = self,
                   let location = locationProvider() else {
                 return
@@ -29,7 +29,8 @@ class SpeedLimitFetcher: ObservableObject {
             
             if let lastLocation = self.lastFetchedLocation {
                 let distance = location.distance(from: lastLocation)
-                if distance < 50 { // avoid calling the api too much
+                if distance < 20 { // avoid calling the api too much
+                    //call after every 20meters
                     //only starts calling after moving
                     return
                 }

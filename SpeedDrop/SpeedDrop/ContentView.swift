@@ -181,14 +181,6 @@ struct SpeedLimitView: View {
                 speedLimitFetcher.fetchSpeedLimit(lat: loc.coordinate.latitude, lon: loc.coordinate.longitude)
              }
           }
-        
-        }
-        // fetch data when location changes
-        .onChange(of: locationLimitManager.lastLocation) { newLocation in
-            if let loc = newLocation {
-                speedLimitFetcher.fetchSpeedLimit(lat: loc.coordinate.latitude, lon: loc.coordinate.longitude)
-            }
-        }
     }
 }
 

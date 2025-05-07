@@ -212,12 +212,17 @@ struct SpeedLimitView: View {
                               }
                  }
             }
-        // fetch data when location changes
-        .onChange(of: locationLimitManager.lastLocation) { newLocation in
-            if let loc = newLocation {
-                speedLimitFetcher.fetchSpeedLimit(lat: loc.coordinate.latitude, lon: loc.coordinate.longitude)
-             }
-          }
+        
+        .onAppear {
+                    // start the continuous fetching when the view appears
+                    speedLimitFetcher.startFetching { [weak locationLimitManager] in
+                        return locationLimitManager?.lastLocation
+                    }
+                }
+                .onDisappear {
+                    // stop fetching when view disappears to save resources
+                    speedLimitFetcher.stopFetching()
+                }
     }
 }
 

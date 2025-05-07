@@ -97,7 +97,7 @@ struct ContentView: View {
             }
         }
         // make selected car available in other view
-        .environmentObject(carModel) 
+        .environmentObject(carModel)
         .tint(.white)
     }
 }

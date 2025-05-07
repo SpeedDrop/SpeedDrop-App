@@ -19,17 +19,20 @@ class SpeedLimitFetcher: ObservableObject {
     func startFetching(for locationProvider: @escaping () -> CLLocation?) {
         timer?.invalidate() // Stop any previous timer if it's running
         
-        // fetch data every minute
-        timer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { [weak self] _ in
+        // fetch data every 5secs instead of how it was before
+        timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
             guard let self = self,
                   let location = locationProvider() else {
                 return
+                
+                
             }
             
             
             if let lastLocation = self.lastFetchedLocation {
                 let distance = location.distance(from: lastLocation)
-                if distance < 50 { // avoid calling the api too much
+                if distance < 20 { // avoid calling the api too much
+                    //call after every 20meters
                     //only starts calling after moving
                     return
                 }
@@ -66,7 +69,7 @@ class SpeedLimitFetcher: ObservableObject {
         
         isLoading = true
         
-        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
             DispatchQueue.main.async {
                 self?.isLoading = false
             }
@@ -74,7 +77,7 @@ class SpeedLimitFetcher: ObservableObject {
             guard let self = self else { return }
             
             if let error = error {
-                print("Error fetching: \(error.localizedDescription)")
+                print("Network error: \(error.localizedDescription)")
                 return
             }
             
@@ -82,34 +85,41 @@ class SpeedLimitFetcher: ObservableObject {
                 print("No data received")
                 return
             }
-            
+
             do {
-                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let elements = json["elements"] as? [[String: Any]] {
-                    
-                    var bestSpeed: Int?
-                    
-                    for element in elements {
-                        if let tags = element["tags"] as? [String: Any],
-                           let maxspeed = tags["maxspeed"] as? String {
-                            
-                            let numberString = maxspeed.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
-                            if let speed = Int(numberString) {
-                                bestSpeed = speed
-                                break
-                            }
+                let jsonObject = try JSONSerialization.jsonObject(with: data)
+                guard let json = jsonObject as? [String: Any] else {
+                    print("Unexpected JSON structure")
+                    return
+                }
+                
+                guard let elements = json["elements"] as? [[String: Any]] else {
+                    print("No elements array in JSON")
+                    return
+                }
+                
+                var bestSpeed: Int?
+                
+                for element in elements {
+                    if let tags = element["tags"] as? [String: Any],
+                       let maxspeed = tags["maxspeed"] as? String {
+                        let numberString = maxspeed.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+                        if let speed = Int(numberString) {
+                            bestSpeed = speed
+                            break
                         }
                     }
-                    
+                }
+                
+                DispatchQueue.main.async {
+                    self.speedLimit = bestSpeed
                     if let speed = bestSpeed {
-                        DispatchQueue.main.async {
-                            self.speedLimit = speed
-//                            print("Updated speed limit: \(speed) mph")
-                        }
+                        print("Updated speed limit: \(speed) mph")
                     } else {
                         print("No valid speed found in Overpass response")
                     }
                 }
+                
             } catch {
                 print("Error parsing JSON: \(error.localizedDescription)")
             }

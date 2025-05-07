@@ -6,10 +6,43 @@
 //
 
 import SwiftUI
+import MediaPlayer
 
 // published variable for the selected car they choose in customization
 class CarSelectionModel: ObservableObject {
     @Published var selectedCar: String = "car1SpeedDrop"
+}
+
+// track speed
+class SpeedMonitorModel: ObservableObject {
+    @Published var isSpeeding = false
+    @Published var isMusicMuted = false
+    
+    private let musicPlayer = MPMusicPlayerController.systemMusicPlayer
+    
+    func checkSpeedLimit(currentSpeed: Double, speedLimit: Int?) {
+        guard let limit = speedLimit, limit > 0 else { return }
+        
+        let wasSpeedingBefore = isSpeeding
+        isSpeeding = currentSpeed >= Double(limit + 15)
+        
+        // when the speeding status changes
+        if isSpeeding != wasSpeedingBefore {
+            if isSpeeding {
+                // exceeded speed limit by 15+ mph
+                if musicPlayer.playbackState == .playing {
+                    musicPlayer.pause()
+                    isMusicMuted = true
+                }
+            } else {
+                // slowed down below the threshold
+                if isMusicMuted {
+                    musicPlayer.play()
+                    isMusicMuted = false
+                }
+            }
+        }
+    }
 }
 
 struct ContentView: View {
@@ -17,6 +50,7 @@ struct ContentView: View {
     @State private var navigateToCoordinates = false
     @State private var navigateToMusic = false
     @StateObject private var carModel = CarSelectionModel()
+    @StateObject private var speedMonitor = SpeedMonitorModel()
     
     var body: some View {
     
@@ -41,6 +75,8 @@ struct ContentView: View {
                     // user's speed
                     SpeedometerView()
                         .offset(x: geometry.size.width * -0.25, y: 0)
+                    // pass the speed monitor
+                        .environmentObject(speedMonitor)
                     
                     // use selected car image here
                        Image(carModel.selectedCar)
@@ -58,7 +94,6 @@ struct ContentView: View {
                                // pass car environment object
                                    .environmentObject(carModel)
                            }
-                 
                     
                     // road with dashed lines
                     RoadView()
@@ -69,7 +104,7 @@ struct ContentView: View {
                    // speed limit sign with pole
                     SpeedLimitView()
                         .offset(x: geometry.size.width * 0.25, y: -260)
-                        // TODO: when speed limit is tapped navigate to apple maps
+                        .environmentObject(speedMonitor)
                         .onTapGesture {
                             print("speed limit tapped!")
                             navigateToCoordinates = true
@@ -86,6 +121,7 @@ struct ContentView: View {
                     // TODO: when music is tapped navigate to apple music
                     .offset(y: geometry.size.height * 0.20000001)
                     .frame(alignment: .center)
+                    .environmentObject(speedMonitor)
                     .onTapGesture {
                         print("music tapped!")
                         navigateToMusic = true
@@ -97,28 +133,29 @@ struct ContentView: View {
             }
         }
         // make selected car available in other view
-        .environmentObject(carModel) 
+        .environmentObject(carModel)
+        .environmentObject(speedMonitor)
         .tint(.white)
     }
 }
 
 struct MusicBarView: View {
+    @EnvironmentObject var speedMonitor: SpeedMonitorModel
+    
     var body: some View {
         VStack{
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.white.opacity(0.8), lineWidth: 2)
                    .background(
                        RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.green.opacity(0.7))
-                       // TODO: add red option when speed limit is exceeded
+                        .fill(speedMonitor.isSpeeding ? Color.red.opacity(0.7) : Color.green.opacity(0.7))
                    )
                    .frame(height: 15, alignment: .center)
                    .padding(.horizontal, 75)
             HStack {
-                Image(systemName: "speaker.wave.2.fill")
-                // TODO: for muted Image(systemName: "speaker.slash.fill")
+                Image(systemName: speedMonitor.isSpeeding ? "speaker.slash.fill" : "speaker.wave.2.fill")
                     .foregroundColor(.white)
-                Text("Music Playing")
+                Text(speedMonitor.isSpeeding ? "Music Paused" : "Music Playing")
                     .foregroundColor(.white)
             }
         }
@@ -128,6 +165,7 @@ struct MusicBarView: View {
 struct SpeedLimitView: View {
     @StateObject private var locationLimitManager = LocationLimitManager()
     @StateObject private var speedLimitFetcher = SpeedLimitFetcher()
+    @EnvironmentObject var speedMonitor: SpeedMonitorModel
 
     var body: some View {
         ZStack {
@@ -173,7 +211,6 @@ struct SpeedLimitView: View {
                                   }
                               }
                  }
-
             }
         // fetch data when location changes
         .onChange(of: locationLimitManager.lastLocation) { newLocation in

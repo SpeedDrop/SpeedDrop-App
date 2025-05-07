@@ -19,75 +19,82 @@ struct MusicPlayerView: View {
     private let musicPlayer = MPMusicPlayerController.systemMusicPlayer
     
     var body: some View {
-        VStack(spacing: 20) {
-            // Now Playing Info
-            VStack(spacing: 8) {
-                Text(nowPlayingTitle)
-                    .font(.title2)
-                    .bold()
-                    .lineLimit(1)
-                Text(nowPlayingArtist)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                    .lineLimit(1)
-            }
-            .padding(.horizontal)
-            
-            // Playback Progress (Read-only due to API restrictions)
-            if totalPlaybackTime > 0 {
-                VStack {
-                    ProgressView(value: currentPlaybackTime, total: totalPlaybackTime)
-                    HStack {
-                        Text(formatTime(currentPlaybackTime))
-                        Spacer()
-                        Text(formatTime(totalPlaybackTime))
-                    }
-                    .font(.caption)
-                    .foregroundColor(.gray)
+        ZStack{
+            Image("backgroundColor")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
+            VStack(spacing: 20) {
+                // Now Playing Info
+                VStack(spacing: 8) {
+                    Text(nowPlayingTitle)
+                        .font(.largeTitle)
+                        .fontWeight(.light)
+                        .tracking(5)
+                        .foregroundColor(.white)
+                    Text(nowPlayingArtist)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                        .lineLimit(1)
                 }
                 .padding(.horizontal)
-            }
-            
-            // Transport Controls
-            HStack(spacing: 40) {
-                Button(action: skipToPrevious) {
-                    Image(systemName: "backward.fill")
-                        .font(.title)
+                
+                // Playback Progress (Read-only due to API restrictions)
+                if totalPlaybackTime > 0 {
+                    VStack {
+                        ProgressView(value: currentPlaybackTime, total: totalPlaybackTime)
+                        HStack {
+                            Text(formatTime(currentPlaybackTime))
+                            Spacer()
+                            Text(formatTime(totalPlaybackTime))
+                        }
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    }
+                    .padding(.horizontal)
                 }
                 
-                Button(action: togglePlayback) {
-                    Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                        .font(.system(size: 50))
+                // Transport Controls
+                HStack(spacing: 40) {
+                    Button(action: skipToPrevious) {
+                        Image(systemName: "backward.fill")
+                            .font(.title)
+                    }
+                    
+                    Button(action: togglePlayback) {
+                        Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                            .font(.system(size: 50))
+                    }
+                    
+                    Button(action: skipToNext) {
+                        Image(systemName: "forward.fill")
+                            .font(.title)
+                    }
                 }
+                .padding(.vertical)
                 
-                Button(action: skipToNext) {
-                    Image(systemName: "forward.fill")
-                        .font(.title)
+                // Volume Control and Route Picker (Updated section)
+                HStack {
+                    VolumeSlider()
+                        .frame(height: 40)
+                    RoutePickerView()
+                        .frame(width: 40, height: 40)
                 }
+                .padding(.horizontal)
+                
+                // Status
+                Text(isPlaying ? "Now Playing" : "Paused")
+                    .foregroundColor(isPlaying ? .green : Color(.systemRed).opacity(0.8))
             }
-            .padding(.vertical)
-            
-            // Volume Control and Route Picker (Updated section)
-            HStack {
-                VolumeSlider()
-                    .frame(height: 40)
-                RoutePickerView()
-                    .frame(width: 40, height: 40)
+            .padding()
+            .onAppear {
+                setupNowPlayingObserver()
+                updateNowPlayingInfo()
+                startPlaybackTimer()
             }
-            .padding(.horizontal)
-            
-            // Status
-            Text(isPlaying ? "Now Playing" : "Paused")
-                .foregroundColor(isPlaying ? .green : .red)
-        }
-        .padding()
-        .onAppear {
-            setupNowPlayingObserver()
-            updateNowPlayingInfo()
-            startPlaybackTimer()
-        }
-        .onDisappear {
-            stopPlaybackTimer()
+            .onDisappear {
+                stopPlaybackTimer()
+            }
         }
     }
     

@@ -17,11 +17,17 @@ class CarSelectionModel: ObservableObject {
 class SpeedMonitorModel: ObservableObject {
     @Published var isSpeeding = false
     @Published var isMusicMuted = false
+    @Published var lastSpeedLimit: Int? = nil
     
     private let musicPlayer = MPMusicPlayerController.systemMusicPlayer
     
     func checkSpeedLimit(currentSpeed: Double, speedLimit: Int?) {
-        guard let limit = speedLimit, limit > 0 else { return }
+        // update lastSpeedLimit property when we get a valid speed limit
+        if let limit = speedLimit, limit > 0 {
+            lastSpeedLimit = limit
+        }
+        
+        guard let limit = lastSpeedLimit, limit > 0 else { return }
         
         let wasSpeedingBefore = isSpeeding
         isSpeeding = currentSpeed >= Double(limit + 15)
@@ -51,6 +57,9 @@ struct ContentView: View {
     @State private var navigateToMusic = false
     @StateObject private var carModel = CarSelectionModel()
     @StateObject private var speedMonitor = SpeedMonitorModel()
+    @StateObject private var locationManager = LocationManager()
+    @StateObject private var locationLimitManager = LocationLimitManager()
+    @StateObject private var speedLimitFetcher = SpeedLimitFetcher()
     
     var body: some View {
     
@@ -75,6 +84,7 @@ struct ContentView: View {
                     // user's speed
                     SpeedometerView()
                         .offset(x: geometry.size.width * -0.25, y: 0)
+                        .environmentObject(locationManager)
                     // pass the speed monitor
                         .environmentObject(speedMonitor)
                     
@@ -104,6 +114,7 @@ struct ContentView: View {
                    // speed limit sign with pole
                     SpeedLimitView()
                         .offset(x: geometry.size.width * 0.25, y: -260)
+                        .environmentObject(speedLimitFetcher)
                         .environmentObject(speedMonitor)
                         .onTapGesture {
                             print("speed limit tapped!")
@@ -136,6 +147,28 @@ struct ContentView: View {
         .environmentObject(carModel)
         .environmentObject(speedMonitor)
         .tint(.white)
+        .onAppear {
+                   // start the speed limit fetcher
+                   speedLimitFetcher.startFetching { [weak locationLimitManager] in
+                       return locationLimitManager?.lastLocation
+                   }
+                   
+                   // initialize the speed monitor with current values
+                   speedMonitor.checkSpeedLimit(currentSpeed: locationManager.speedMPH,
+                                                speedLimit: speedLimitFetcher.speedLimit)
+               }
+               // monitor speed changes and check against speed limit
+               .onChange(of: locationManager.speedMPH) { oldValue, newValue in
+                   speedMonitor.checkSpeedLimit(currentSpeed: newValue,
+                                             speedLimit: speedLimitFetcher.speedLimit)
+                   print("Speed changed to \(newValue) MPH, checking against limit: \(speedLimitFetcher.speedLimit ?? 0)")
+               }
+                // update speed monitor when speed limit changes
+               .onChange(of: speedLimitFetcher.speedLimit) { oldValue, newValue in
+                           speedMonitor.checkSpeedLimit(currentSpeed: locationManager.speedMPH,
+                                                       speedLimit: newValue)
+                           print("Speed limit updated to: \(newValue ?? 0) MPH")
+                       }
     }
 }
 
@@ -164,7 +197,7 @@ struct MusicBarView: View {
 
 struct SpeedLimitView: View {
     @StateObject private var locationLimitManager = LocationLimitManager()
-    @StateObject private var speedLimitFetcher = SpeedLimitFetcher()
+    @EnvironmentObject var speedLimitFetcher: SpeedLimitFetcher
     @EnvironmentObject var speedMonitor: SpeedMonitorModel
 
     var body: some View {
@@ -213,15 +246,11 @@ struct SpeedLimitView: View {
                  }
             }
         
-        .onAppear {
-                    // start the continuous fetching when the view appears
-                    speedLimitFetcher.startFetching { [weak locationLimitManager] in
-                        return locationLimitManager?.lastLocation
+        .onChange(of: speedLimitFetcher.speedLimit) { oldValue, newValue in
+                    if let limit = newValue {
+                        print("Speed limit changed to \(limit) MPH")
+                        speedMonitor.lastSpeedLimit = limit
                     }
-                }
-                .onDisappear {
-                    // stop fetching when view disappears to save resources
-                    speedLimitFetcher.stopFetching()
                 }
     }
 }
@@ -229,7 +258,8 @@ struct SpeedLimitView: View {
 
 struct SpeedometerView: View {
     
-    @StateObject private var locationManager = LocationManager()
+    @EnvironmentObject var locationManager: LocationManager
+    @EnvironmentObject var speedMonitor: SpeedMonitorModel
     
     var body: some View {
         ZStack {
@@ -260,8 +290,21 @@ struct SpeedometerView: View {
                 
         }
         .frame(width: 300, height: 110)
+        .onAppear {
+                    // connect to speed monitor when view appears
+                    connectToSpeedMonitor()
+                }
+                // monitor speed changes
+                .onChange(of: locationManager.speedMPH) { _, newSpeed in
+                    connectToSpeedMonitor()
+                }
     }
+    private func connectToSpeedMonitor() {
+           // check if speeding and control music
+           speedMonitor.checkSpeedLimit(currentSpeed: locationManager.speedMPH,speedLimit: speedMonitor.lastSpeedLimit)
+       }
 }
+
 
 struct RoadView: View {
     var body: some View {

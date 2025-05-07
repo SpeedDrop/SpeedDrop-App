@@ -16,15 +16,48 @@ class CarSelectionModel: ObservableObject {
 // track speed
 class SpeedMonitorModel: ObservableObject {
     @Published var isSpeeding = false
+    @Published var isMusicPlaying = false
     @Published var isMusicMuted = false
     @Published var lastSpeedLimit: Int? = nil
     
     private let musicPlayer = MPMusicPlayerController.systemMusicPlayer
+    private var playbackStateObserver: NSObjectProtocol?
+    
+    init() {
+        // initialize with current playback state
+        updateMusicPlaybackState()
+        
+        // setup notification to monitor music state changes
+        playbackStateObserver = NotificationCenter.default.addObserver(
+            forName: .MPMusicPlayerControllerPlaybackStateDidChange,
+            object: musicPlayer,
+            queue: .main
+        ) { [weak self] _ in
+            self?.updateMusicPlaybackState()
+        }
+        
+        musicPlayer.beginGeneratingPlaybackNotifications()
+    }
+    
+    deinit {
+        if let observer = playbackStateObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        musicPlayer.endGeneratingPlaybackNotifications()
+    }
+    
+    func updateMusicPlaybackState() {
+        isMusicPlaying = musicPlayer.playbackState == .playing
+        print("Music playback state updated: \(isMusicPlaying ? "Playing" : "Paused")")
+    }
     
     func checkSpeedLimit(currentSpeed: Double, speedLimit: Int?) {
         // update lastSpeedLimit property when we get a valid speed limit
         if let limit = speedLimit, limit > 0 {
-            lastSpeedLimit = limit
+            if lastSpeedLimit != limit {
+                print("Speed limit updated to: \(limit) MPH")
+                lastSpeedLimit = limit
+            }
         }
         
         guard let limit = lastSpeedLimit, limit > 0 else { return }
@@ -32,21 +65,26 @@ class SpeedMonitorModel: ObservableObject {
         let wasSpeedingBefore = isSpeeding
         isSpeeding = currentSpeed >= Double(limit + 15)
         
-        // when the speeding status changes
+        //  speeding status changes
         if isSpeeding != wasSpeedingBefore {
             if isSpeeding {
-                // exceeded speed limit by 15+ mph
+                // Exceeded speed limit by 15+ mph
                 if musicPlayer.playbackState == .playing {
                     musicPlayer.pause()
                     isMusicMuted = true
+                    print("Music paused due to speeding")
                 }
             } else {
-                // slowed down below the threshold
+                // slowed down resume music
                 if isMusicMuted {
                     musicPlayer.play()
                     isMusicMuted = false
+                    print("Music resumed after slowing down")
                 }
             }
+            
+            //update music playing state
+            updateMusicPlaybackState()
         }
     }
 }
@@ -176,21 +214,39 @@ struct MusicBarView: View {
     @EnvironmentObject var speedMonitor: SpeedMonitorModel
     
     var body: some View {
-        VStack{
+        VStack {
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.white.opacity(0.8), lineWidth: 2)
-                   .background(
-                       RoundedRectangle(cornerRadius: 20)
-                        .fill(speedMonitor.isSpeeding ? Color.red.opacity(0.7) : Color.green.opacity(0.7))
-                   )
-                   .frame(height: 15, alignment: .center)
-                   .padding(.horizontal, 75)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(
+                            speedMonitor.isSpeeding || (!speedMonitor.isMusicPlaying)
+                            ? Color.red.opacity(0.7)
+                            : Color.green.opacity(0.7)
+                        )
+                )
+                .frame(height: 15, alignment: .center)
+                .padding(.horizontal, 75)
+            
             HStack {
-                Image(systemName: speedMonitor.isSpeeding ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                // show speaker slash when either speeding or music manually paused
+                Image(systemName: speedMonitor.isMusicPlaying ? "speaker.wave.2.fill" : "speaker.slash.fill")
                     .foregroundColor(.white)
-                Text(speedMonitor.isSpeeding ? "Music Paused" : "Music Playing")
+                
+                // text showing status handles both speeding and manual pausing cases
+                Text(getMusicStatusText())
                     .foregroundColor(.white)
             }
+        }
+    }
+    
+    private func getMusicStatusText() -> String {
+        if speedMonitor.isSpeeding && speedMonitor.isMusicMuted {
+            return "Music Paused (Speeding)"
+        } else if !speedMonitor.isMusicPlaying {
+            return "Music Paused"
+        } else {
+            return "Music Playing"
         }
     }
 }

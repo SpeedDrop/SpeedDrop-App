@@ -16,7 +16,9 @@ struct MusicPlayerView: View {
     @State private var currentPlaybackTime: TimeInterval = 0
     @State private var totalPlaybackTime: TimeInterval = 0
     
-    private let musicPlayer = MPMusicPlayerController.systemMusicPlayer
+    @EnvironmentObject var speedMonitor: SpeedMonitorModel
+      private let musicPlayer = MPMusicPlayerController.systemMusicPlayer
+      
     
     var body: some View {
         ZStack{
@@ -83,8 +85,8 @@ struct MusicPlayerView: View {
                 .padding(.horizontal)
                 
                 // Status
-                Text(isPlaying ? "Now Playing" : "Paused")
-                    .foregroundColor(isPlaying ? .green : Color(.systemRed).opacity(0.8))
+                Text(getPlaybackStatusText())
+                                    .foregroundColor(speedMonitor.isMusicPlaying ? .green : Color(.systemRed).opacity(0.8))
             }
             .padding()
             .onAppear {
@@ -102,10 +104,12 @@ struct MusicPlayerView: View {
     private func togglePlayback() {
         if musicPlayer.playbackState == .playing {
             musicPlayer.pause()
+            speedMonitor.isMusicMuted = false
         } else {
             musicPlayer.play()
         }
         isPlaying = (musicPlayer.playbackState == .playing)
+        speedMonitor.updateMusicPlaybackState()
     }
     
     private func skipToNext() {
@@ -115,6 +119,16 @@ struct MusicPlayerView: View {
     private func skipToPrevious() {
         musicPlayer.skipToPreviousItem()
     }
+    
+    private func getPlaybackStatusText() -> String {
+          if speedMonitor.isSpeeding {
+              return "Music Disabled (Speeding)"
+          } else if speedMonitor.isMusicPlaying {
+              return "Now Playing"
+          } else {
+              return "Paused"
+          }
+      }
     
     // MARK: - Playback Time
     private func startPlaybackTimer() {
@@ -150,6 +164,7 @@ struct MusicPlayerView: View {
             totalPlaybackTime = 0
         }
         currentPlaybackTime = musicPlayer.currentPlaybackTime
+        speedMonitor.updateMusicPlaybackState()
     }
     
     private func setupNowPlayingObserver() {

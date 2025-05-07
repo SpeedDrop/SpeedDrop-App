@@ -54,7 +54,7 @@ class SpeedLimitFetcher: ObservableObject {
     func fetchSpeedLimit(lat: Double, lon: Double) {
         let query = """
         [out:json];
-        way(around:25,\(lat),\(lon))["maxspeed"];
+        way(around:50,\(lat),\(lon))["maxspeed"];
         out;
         """
         

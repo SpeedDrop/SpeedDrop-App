@@ -22,7 +22,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         super.init()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        locationManager.activityType = .fitness // Or .automotiveNavigation
+        locationManager.activityType = .automotiveNavigation
         locationManager.requestWhenInUseAuthorization() // Request permission
         locationManager.startUpdatingLocation() // Start getting location updates
     }

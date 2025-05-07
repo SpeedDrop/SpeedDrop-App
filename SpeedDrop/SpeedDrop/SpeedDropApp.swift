@@ -11,7 +11,7 @@ import SwiftUI
 struct SpeedDropApp: App {
     var body: some Scene {
         WindowGroup {
-            MusicPlayerView()
+            ContentView()
         }
     }
 }
